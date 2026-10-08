@@ -1,0 +1,3110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLID · Edición Definitiva | Por Juan Felipe Suarez Rodriguez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #05070f;
+    --bg-alt: #0a0e1a;
+    --card: #0f1424;
+    --card-hover: #141a2e;
+    --border: #1e2740;
+    --border-bright: #2d3a5c;
+    --text: #eef2ff;
+    --muted: #8b95b5;
+    --muted-dim: #5a6485;
+    --accent: #6366f1;
+    --accent-2: #22d3ee;
+    --accent-3: #f472b6;
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --purple: #a78bfa;
+    --orange: #fb923c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* FONDO AURORA ANIMADO */
+  .aurora {
+    position: fixed;
+    inset: 0;
+    z-index: -3;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .aurora-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.35;
+    animation: float 22s ease-in-out infinite;
+  }
+
+  .blob-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #6366f1, transparent 70%);
+    top: -150px; left: -150px;
+    animation-delay: 0s;
+  }
+  .blob-2 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, #22d3ee, transparent 70%);
+    top: 30%; right: -200px;
+    animation-delay: -7s;
+  }
+  .blob-3 {
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, #f472b6, transparent 70%);
+    bottom: -100px; left: 30%;
+    animation-delay: -14s;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(80px, -60px) scale(1.15); }
+    66% { transform: translate(-60px, 80px) scale(0.9); }
+  }
+
+  /* GRID OVERLAY */
+  .grid-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background-image:
+      linear-gradient(rgba(99,102,241,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 90%);
+    pointer-events: none;
+  }
+
+  /* NOISE */
+  .noise {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.025;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(5,7,15,0.75);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.3px;
+  }
+
+  .logo-mark {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2), var(--accent-3));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 8px 24px -8px rgba(99,102,241,0.7);
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 8px 24px -8px rgba(99,102,241,0.7); }
+    50% { box-shadow: 0 8px 32px -6px rgba(34,211,238,0.9); }
+  }
+
+  .logo-text {
+    background: linear-gradient(135deg, #fff, #a5b4fc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo-text small {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--muted);
+    -webkit-text-fill-color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 0.3rem;
+    list-style: none;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .nav-links a:hover {
+    color: var(--text);
+    background: rgba(99,102,241,0.12);
+  }
+
+  .nav-cta {
+    padding: 0.55rem 1.1rem !important;
+    background: linear-gradient(135deg, var(--accent), var(--purple)) !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 8px 20px -8px rgba(99,102,241,0.8);
+  }
+
+  .nav-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -8px rgba(99,102,241,1) !important;
+  }
+
+  /* HERO */
+  .hero {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 5rem 2rem 6rem;
+    position: relative;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  @media (max-width: 1024px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 3rem; }
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 1rem;
+    background: rgba(99,102,241,0.1);
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #a5b4fc;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+  }
+
+  .hero-eyebrow .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 12px var(--green);
+    animation: blink 2s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -2.5px;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 .gradient {
+    background: linear-gradient(135deg, #818cf8 0%, #22d3ee 50%, #f472b6 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 8s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .hero-desc {
+    color: var(--muted);
+    font-size: 1.12rem;
+    margin-bottom: 2rem;
+    max-width: 620px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1.6rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.25s;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    color: #fff;
+    box-shadow: 0 12px 32px -10px rgba(99,102,241,0.9);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px -10px rgba(99,102,241,1);
+  }
+
+  .btn-ghost {
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+    border: 1px solid var(--border-bright);
+  }
+
+  .btn-ghost:hover {
+    background: rgba(99,102,241,0.1);
+    border-color: var(--accent);
+  }
+
+  /* AUTHOR CARD HERO */
+  .author-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.7rem 1.3rem 0.7rem 0.7rem;
+    background: linear-gradient(135deg, rgba(244,114,182,0.12), rgba(99,102,241,0.1));
+    border: 1px solid rgba(244,114,182,0.35);
+    border-radius: 100px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 12px 32px -14px rgba(244,114,182,0.6);
+  }
+
+  .author-chip .avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-3), var(--accent), var(--accent-2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(244,114,182,0.25);
+  }
+
+  .author-chip .info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .author-chip .info small {
+    font-size: 0.68rem;
+    color: var(--accent-2);
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+
+  .author-chip .info strong {
+    font-size: 0.9rem;
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  /* HERO VISUAL */
+  .hero-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 480px;
+  }
+
+  .hero-orbit {
+    position: relative;
+    width: 400px;
+    height: 400px;
+  }
+
+  .hero-core {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 130px; height: 130px;
+    border-radius: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2), var(--accent-3));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    box-shadow:
+      0 0 60px rgba(99,102,241,0.6),
+      0 0 100px rgba(34,211,238,0.3),
+      inset 0 0 30px rgba(255,255,255,0.15);
+    animation: coreRotate 20s linear infinite;
+    z-index: 3;
+  }
+
+  @keyframes coreRotate {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .hero-core span {
+    animation: coreCounter 20s linear infinite;
+  }
+
+  @keyframes coreCounter {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
+  }
+
+  .orbit-ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    border-radius: 50%;
+    border: 1px dashed rgba(99,102,241,0.3);
+    transform: translate(-50%, -50%);
+  }
+
+  .ring-1 { width: 220px; height: 220px; animation: rotate 15s linear infinite; }
+  .ring-2 { width: 320px; height: 320px; animation: rotate 25s linear infinite reverse; border-color: rgba(34,211,238,0.2); }
+  .ring-3 { width: 400px; height: 400px; animation: rotate 35s linear infinite; border-color: rgba(244,114,182,0.15); }
+
+  @keyframes rotate {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .orbit-item {
+    position: absolute;
+    width: 62px; height: 62px;
+    border-radius: 18px;
+    background: var(--card);
+    border: 1px solid var(--border-bright);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    box-shadow: 0 12px 32px -8px rgba(0,0,0,0.6);
+    transition: all 0.3s;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .orbit-item:hover {
+    transform: scale(1.2);
+    z-index: 10;
+  }
+
+  .orbit-item.s { background: linear-gradient(135deg, #6366f1, #818cf8); top: -31px; left: 50%; margin-left: -31px; }
+  .orbit-item.o { background: linear-gradient(135deg, #22d3ee, #67e8f9); top: 50%; right: -31px; margin-top: -31px; }
+  .orbit-item.l { background: linear-gradient(135deg, #34d399, #6ee7b7); bottom: -31px; left: 50%; margin-left: -31px; }
+  .orbit-item.i { background: linear-gradient(135deg, #fbbf24, #fcd34d); bottom: 20%; left: -31px; }
+  .orbit-item.d { background: linear-gradient(135deg, #f472b6, #f9a8d4); top: 20%; left: -31px; }
+
+  /* ORBITED LAYOUT for l/i/d positioned relative to inner rings */
+  .ring-3 .orbit-item { position: absolute; }
+
+  /* HERO STATS */
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .hero-stat {
+    text-align: left;
+  }
+
+  .hero-stat strong {
+    display: block;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff, #a5b4fc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+  }
+
+  .hero-stat span {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  /* SECCIONES */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  section {
+    padding: 6rem 0;
+    scroll-margin-top: 90px;
+    position: relative;
+  }
+
+  .section-header {
+    margin-bottom: 4rem;
+    max-width: 800px;
+  }
+
+  .section-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent-2);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+    padding: 0.3rem 0.9rem;
+    background: rgba(34,211,238,0.08);
+    border: 1px solid rgba(34,211,238,0.25);
+    border-radius: 6px;
+  }
+
+  h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2rem, 4.5vw, 3.4rem);
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 1.2rem;
+  }
+
+  .section-intro {
+    color: var(--muted);
+    font-size: 1.08rem;
+    max-width: 720px;
+  }
+
+  /* INTRO GRID */
+  .intro-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.3rem;
+    margin-top: 3rem;
+  }
+
+  .feature-card {
+    background: linear-gradient(180deg, var(--card), rgba(15,20,36,0.5));
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.8rem;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, var(--glow, rgba(99,102,241,0.1)), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.35s;
+    pointer-events: none;
+  }
+
+  .feature-card:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-6px);
+    box-shadow: 0 24px 48px -20px rgba(0,0,0,0.6);
+  }
+
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 1.2rem;
+    background: rgba(99,102,241,0.12);
+    border: 1px solid rgba(99,102,241,0.25);
+  }
+
+  .feature-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    color: var(--text);
+  }
+
+  .feature-card p {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.65;
+  }
+
+  /* PRINCIPIO DETALLADO */
+  .principle-hero {
+    border-radius: 28px;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--bg-alt), var(--bg));
+    border: 1px solid var(--border);
+    margin-bottom: 3rem;
+    position: relative;
+  }
+
+  .principle-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top left, var(--pglow), transparent 50%);
+    pointer-events: none;
+  }
+
+  .ph-head {
+    padding: 3rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .ph-letter {
+    width: 100px;
+    height: 100px;
+    border-radius: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, var(--pc1), var(--pc2));
+    flex-shrink: 0;
+    box-shadow: 0 20px 50px -15px var(--pc1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ph-letter::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,255,255,0.15));
+  }
+
+  .ph-info { flex: 1; min-width: 260px; }
+
+  .ph-info .acronym {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--pc1);
+    letter-spacing: 3px;
+    margin-bottom: 0.5rem;
+  }
+
+  .ph-info h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    margin-bottom: 0.4rem;
+    line-height: 1.15;
+  }
+
+  .ph-info .subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    font-style: italic;
+    margin-bottom: 1rem;
+  }
+
+  .ph-quote {
+    padding: 0.8rem 1.2rem;
+    border-left: 3px solid var(--pc1);
+    background: rgba(255,255,255,0.02);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: var(--text);
+    max-width: 700px;
+  }
+
+  .ph-quote strong { color: var(--pc1); }
+
+  .ph-body {
+    padding: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    position: relative;
+  }
+
+  @media (max-width: 900px) {
+    .ph-body { grid-template-columns: 1fr; padding: 2rem 1.5rem; gap: 2rem; }
+    .ph-head { padding: 2rem 1.5rem; }
+  }
+
+  .ph-body h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text);
+  }
+
+  .ph-body h4 .num-badge {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: var(--pc1);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .ph-body p {
+    color: var(--muted);
+    font-size: 0.96rem;
+    margin-bottom: 1rem;
+  }
+
+  .ph-body strong { color: var(--text); }
+
+  .check-list {
+    list-style: none;
+  }
+
+  .check-list li {
+    padding: 0.55rem 0 0.55rem 2rem;
+    position: relative;
+    color: var(--muted);
+    font-size: 0.93rem;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .check-list li:last-child { border-bottom: none; }
+
+  .check-list li::before {
+    content: '✕';
+    position: absolute;
+    left: 0;
+    top: 0.55rem;
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    background: rgba(248,113,113,0.15);
+    color: var(--red);
+    font-size: 0.7rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .check-list.positive li::before {
+    content: '✓';
+    background: rgba(52,211,153,0.15);
+    color: var(--green);
+  }
+
+  /* CODE */
+  .code {
+    background: #06080f;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    margin: 1rem 0;
+    box-shadow: 0 20px 40px -20px rgba(0,0,0,0.8);
+  }
+
+  .code-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted-dim);
+  }
+
+  .code-dot {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dr { background: #ff5f56; }
+  .dy { background: #ffbd2e; }
+  .dg { background: #27c93f; }
+
+  .code-title {
+    margin-left: 0.5rem;
+    font-weight: 500;
+  }
+
+  pre {
+    padding: 1.3rem 1.2rem;
+    overflow-x: auto;
+    line-height: 1.65;
+    color: #c9d1d9;
+  }
+
+  pre::-webkit-scrollbar { height: 8px; }
+  pre::-webkit-scrollbar-track { background: transparent; }
+  pre::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 4px; }
+
+  .kw { color: #ff7b72; }
+  .cl { color: #ffa657; }
+  .fn { color: #d2a8ff; }
+  .st { color: #a5d6ff; }
+  .cm { color: #6e7681; font-style: italic; }
+  .nm { color: #79c0ff; }
+  .bad { color: #f87171; text-decoration: line-through; text-decoration-color: rgba(248,113,113,0.5); }
+  .good { color: #34d399; }
+
+  /* COMPARE */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin: 1rem 0;
+  }
+
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+
+  .compare-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .compare-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    align-self: flex-start;
+  }
+
+  .tag-bad { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+  .tag-good { background: rgba(52,211,153,0.12); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+
+  /* DIAGRAMA VISUAL */
+  .diagram-box {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .diagram-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .diagram-title::before {
+    content: '';
+    width: 4px; height: 20px;
+    background: var(--dc, var(--accent));
+    border-radius: 2px;
+  }
+
+  /* ISP DIAGRAM */
+  .isp-diagram {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  @media (max-width: 780px) {
+    .isp-diagram { grid-template-columns: 1fr; }
+    .isp-arrow { transform: rotate(90deg); }
+  }
+
+  .isp-side {
+    background: rgba(15,20,36,0.6);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+
+  .isp-side.bad-side { border-color: rgba(248,113,113,0.3); }
+  .isp-side.good-side { border-color: rgba(52,211,153,0.3); }
+
+  .isp-side h5 {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .bad-side h5 { color: var(--red); }
+  .good-side h5 { color: var(--green); }
+
+  .iface-box {
+    background: var(--card);
+    border: 2px solid var(--border-bright);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+  }
+
+  .iface-box.fat { border-color: rgba(248,113,113,0.5); }
+  .iface-box.thin { border-color: rgba(52,211,153,0.5); padding: 0.7rem; }
+
+  .iface-box .iface-name {
+    font-weight: 700;
+    color: var(--accent-2);
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .iface-method {
+    padding: 0.25rem 0 0.25rem 1rem;
+    color: var(--muted);
+    position: relative;
+    font-size: 0.72rem;
+  }
+
+  .iface-method::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 900;
+  }
+
+  .iface-method.used { color: var(--text); }
+  .iface-method.unused { color: var(--muted-dim); text-decoration: line-through; }
+
+  .isp-arrow {
+    font-size: 2rem;
+    color: var(--accent-2);
+    text-align: center;
+    animation: arrowPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes arrowPulse {
+    0%, 100% { opacity: 0.4; transform: translateX(0); }
+    50% { opacity: 1; transform: translateX(6px); }
+  }
+
+  /* ISP INTERACTIVO */
+  .isp-playground {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  @media (max-width: 700px) { .isp-playground { grid-template-columns: 1fr; } }
+
+  .role-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .role-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+
+  .role-card.active {
+    border-color: var(--accent-2);
+    box-shadow: 0 0 0 3px rgba(34,211,238,0.15);
+  }
+
+  .role-card h5 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .role-card p {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .role-methods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .role-method {
+    padding: 0.25rem 0.6rem;
+    background: rgba(99,102,241,0.12);
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: #a5b4fc;
+    transition: all 0.2s;
+  }
+
+  .role-method.missing {
+    background: rgba(248,113,113,0.1);
+    border-color: rgba(248,113,113,0.3);
+    color: var(--red);
+    text-decoration: line-through;
+  }
+
+  .role-method.matched {
+    background: rgba(52,211,153,0.15);
+    border-color: rgba(52,211,153,0.4);
+    color: var(--green);
+  }
+
+  /* ISP TABLE */
+  .isp-compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background: var(--card);
+    border-radius: 14px;
+    overflow: hidden;
+    font-size: 0.88rem;
+    border: 1px solid var(--border);
+  }
+
+  .isp-compare-table th {
+    padding: 1rem;
+    text-align: left;
+    background: rgba(99,102,241,0.1);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--accent-2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .isp-compare-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .isp-compare-table tr:last-child td { border-bottom: none; }
+
+  .isp-compare-table tr:hover td {
+    background: rgba(99,102,241,0.04);
+    color: var(--text);
+  }
+
+  /* LENGUAJES TABS */
+  .lang-tabs {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    padding: 0.4rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .lang-tab {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .lang-tab:hover {
+    color: var(--text);
+    background: rgba(99,102,241,0.1);
+  }
+
+  .lang-tab.active {
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    color: #fff;
+    box-shadow: 0 6px 16px -6px rgba(99,102,241,0.8);
+  }
+
+  /* ISP STATS */
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .metric-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+
+  .metric-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #fff, #a5b4fc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.3rem;
+  }
+
+  .metric-label {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+
+  /* CASO REAL */
+  .case-wrapper {
+    background: linear-gradient(180deg, var(--bg-alt), var(--bg));
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @media (max-width: 700px) { .case-wrapper { padding: 1.8rem; } }
+
+  .case-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -40%; right: -10%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(99,102,241,0.18), transparent 70%);
+    pointer-events: none;
+  }
+
+  .case-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    background: rgba(244,114,182,0.12);
+    border: 1px solid rgba(244,114,182,0.35);
+    color: #f9a8d4;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .case-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    margin-bottom: 1rem;
+  }
+
+  .case-desc {
+    color: var(--muted);
+    max-width: 800px;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+
+  .case-timeline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+    position: relative;
+  }
+
+  .case-step {
+    background: rgba(6,8,15,0.7);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.4rem;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .case-step:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+
+  .case-step-num {
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+    margin-bottom: 0.9rem;
+    box-shadow: 0 8px 20px -8px rgba(99,102,241,0.8);
+  }
+
+  .case-step h5 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .case-step p {
+    color: var(--muted);
+    font-size: 0.83rem;
+    line-height: 1.6;
+  }
+
+  /* TABLE */
+  .metric-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0 0;
+    background: rgba(6,8,15,0.5);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .metric-table th {
+    padding: 1rem 1.2rem;
+    text-align: left;
+    background: rgba(99,102,241,0.1);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--accent-2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .metric-table td {
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .metric-table tr:last-child td { border-bottom: none; }
+  .metric-table tr:hover td { background: rgba(99,102,241,0.04); }
+
+  .improvement { color: var(--green); font-weight: 700; }
+
+  /* BENEFICIOS */
+  .benefit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.2rem;
+    margin-top: 3rem;
+  }
+
+  .benefit-card {
+    padding: 1.8rem;
+    background: linear-gradient(180deg, var(--card), rgba(15,20,36,0.4));
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    transition: all 0.3s;
+    text-align: center;
+  }
+
+  .benefit-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    box-shadow: 0 24px 48px -24px rgba(99,102,241,0.5);
+  }
+
+  .benefit-icon {
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+    display: inline-block;
+  }
+
+  .benefit-card h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+
+  .benefit-card p {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  /* MNEMOTECNIA */
+  .mnemonic-box {
+    background: linear-gradient(135deg, rgba(251,191,36,0.08), rgba(244,114,182,0.06));
+    border: 1px solid rgba(251,191,36,0.25);
+    border-radius: 24px;
+    padding: 2.5rem;
+    text-align: center;
+    margin-top: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mnemonic-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(251,191,36,0.08), transparent 70%);
+    pointer-events: none;
+  }
+
+  .mnemonic-box h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.8rem;
+    position: relative;
+  }
+
+  .mnemonic-words {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .mnemonic-word {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.2rem;
+    background: rgba(6,8,15,0.6);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .mnemonic-word .letter {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--yellow), var(--orange));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ROADMAP */
+  .roadmap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.2rem;
+    margin-top: 2rem;
+    counter-reset: step;
+  }
+
+  .roadmap-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1.8rem 1.5rem 1.5rem;
+    position: relative;
+    transition: all 0.3s;
+    counter-increment: step;
+  }
+
+  .roadmap-card::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    top: -14px; left: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    padding: 0.3rem 0.7rem;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px -8px rgba(99,102,241,0.8);
+  }
+
+  .roadmap-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+
+  .roadmap-card h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .roadmap-card p {
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  /* HIGHLIGHT BOX */
+  .highlight {
+    background: rgba(34,211,238,0.06);
+    border-left: 4px solid var(--accent-2);
+    border-radius: 10px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .highlight p {
+    color: var(--text) !important;
+    font-size: 0.94rem;
+    margin: 0 !important;
+  }
+
+  .highlight strong { color: var(--accent-2); }
+
+  .highlight.warn {
+    background: rgba(251,191,36,0.06);
+    border-left-color: var(--yellow);
+  }
+
+  .highlight.warn strong { color: var(--yellow); }
+
+  /* AUTOR */
+  .author-hero {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2.5rem;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(244,114,182,0.08), rgba(99,102,241,0.06));
+    border: 1px solid rgba(244,114,182,0.25);
+    border-radius: 28px;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @media (max-width: 700px) {
+    .author-hero { grid-template-columns: 1fr; text-align: center; padding: 2rem; }
+  }
+
+  .author-hero::before {
+    content: '';
+    position: absolute;
+    top: -30%; right: -10%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(244,114,182,0.15), transparent 70%);
+    pointer-events: none;
+  }
+
+  .author-avatar-lg {
+    width: 130px; height: 130px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-3), var(--accent), var(--accent-2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    box-shadow:
+      0 0 0 6px rgba(244,114,182,0.15),
+      0 24px 48px -15px rgba(244,114,182,0.6);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 700px) {
+    .author-avatar-lg { margin: 0 auto; }
+  }
+
+  .author-hero-info { position: relative; }
+
+  .author-hero-info .role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent-3);
+    margin-bottom: 0.6rem;
+    font-weight: 600;
+  }
+
+  .author-hero-info h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #fff, #f9a8d4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .author-hero-info p {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 700px;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 4rem 2rem 2rem;
+    margin-top: 4rem;
+    position: relative;
+  }
+
+  .footer-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  @media (max-width: 780px) {
+    .footer-inner { grid-template-columns: 1fr; }
+  }
+
+  .footer-brand .logo { margin-bottom: 1rem; }
+
+  .footer-brand p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    max-width: 400px;
+    line-height: 1.7;
+  }
+
+  .footer-col h5 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 0.5rem; }
+  .footer-col a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--accent-2); }
+
+  .footer-bottom {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .footer-bottom strong {
+    background: linear-gradient(135deg, var(--accent-3), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+  }
+
+  /* SCROLL */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--accent), var(--purple));
+    border-radius: 5px;
+  }
+
+  /* REVEAL ANIM */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .reveal.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE NAV */
+  @media (max-width: 780px) {
+    .nav-links { display: none; }
+    .nav-inner { padding: 0.8rem 1.2rem; }
+  }
+
+  @media (max-width: 640px) {
+    section { padding: 4rem 0; }
+    .container { padding: 0 1.2rem; }
+    .hero { padding: 3rem 1.2rem 4rem; }
+    h1 { letter-spacing: -1.5px; }
+    .hero-stats { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- FONDO -->
+<div class="aurora">
+  <div class="aurora-blob blob-1"></div>
+  <div class="aurora-blob blob-2"></div>
+  <div class="aurora-blob blob-3"></div>
+</div>
+<div class="grid-overlay"></div>
+<div class="noise"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <div class="logo-mark">🏛️</div>
+      <div class="logo-text">
+        SOLID
+        <small>Guía Definitiva</small>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#intro">Introducción</a></li>
+      <li><a href="#srp">SRP</a></li>
+      <li><a href="#ocp">OCP</a></li>
+      <li><a href="#lsp">LSP</a></li>
+      <li><a href="#isp" style="color:#fcd34d;">ISP ★</a></li>
+      <li><a href="#dip">DIP</a></li>
+      <li><a href="#caso">Caso Real</a></li>
+      <li><a href="#autor">Autor</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-grid">
+    <div class="hero-content reveal">
+      <div class="hero-eyebrow">
+        <span class="dot"></span>
+        Guía Interactiva · Edición 2025
+      </div>
+
+      <h1>
+        Los Principios <span class="gradient">SOLID</span><br>
+        llevados al extremo.
+      </h1>
+
+      <p class="hero-desc">
+        Una inmersión visual y profunda en los cinco pilares del diseño orientado a objetos. 
+        Con diagramas interactivos, ejemplos multi-lenguaje, anti-patrones, casos reales y 
+        un análisis sin precedentes del principio <strong style="color:#fcd34d;">Interface Segregation</strong>.
+      </p>
+
+
+      <div class="hero-actions" style="margin-top:1.5rem;">
+        <a href="#isp" class="btn btn-primary">
+          🎯 Explorar ISP a fondo
+        </a>
+        <a href="#intro" class="btn btn-ghost">
+          📖 Comenzar desde cero
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <strong>5</strong>
+          <span>Principios</span>
+        </div>
+        <div class="hero-stat">
+          <strong>25+</strong>
+          <span>Ejemplos de código</span>
+        </div>
+        <div class="hero-stat">
+          <strong>6</strong>
+          <span>Lenguajes</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual reveal">
+      <div class="hero-orbit">
+        <div class="hero-core"><span>S</span></div>
+
+        <div class="orbit-ring ring-1"></div>
+        <div class="orbit-ring ring-2"></div>
+        <div class="orbit-ring ring-3"></div>
+
+        <a href="#srp" class="orbit-item s" style="top: -31px; left: 50%; margin-left: -31px;">S</a>
+        <a href="#ocp" class="orbit-item o" style="top: 50%; right: -31px; margin-top: -31px;">O</a>
+        <a href="#lsp" class="orbit-item l" style="bottom: -31px; left: 50%; margin-left: -31px;">L</a>
+        <a href="#isp" class="orbit-item i" style="bottom: 15%; left: -31px;">I</a>
+        <a href="#dip" class="orbit-item d" style="top: 15%; left: -31px;">D</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- INTRODUCCIÓN -->
+<section id="intro" class="container">
+  <div class="section-header reveal">
+    <div class="section-tag">01 · Fundamentos</div>
+    <h2>¿Qué es <span class="gradient" style="background:linear-gradient(135deg,#818cf8,#22d3ee,#f472b6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">SOLID</span>?</h2>
+    <p class="section-intro">
+      Cinco principios que transforman código frágil en arquitecturas robustas. 
+      Nacieron en el mundo OOP, pero hoy gobiernan cualquier paradigma serio.
+    </p>
+  </div>
+
+  <div class="intro-grid">
+    <div class="feature-card reveal" style="--glow:rgba(99,102,241,0.15);">
+      <div class="feature-icon" style="background:rgba(99,102,241,0.12);border-color:rgba(99,102,241,0.3);">📜</div>
+      <h3>Origen histórico</h3>
+      <p>Robert C. Martin formuló los principios a inicios de los 2000. Michael Feathers acuñó el acrónimo SOLID en 2004.</p>
+    </div>
+    <div class="feature-card reveal" style="--glow:rgba(34,211,238,0.15);">
+      <div class="feature-icon" style="background:rgba(34,211,238,0.12);border-color:rgba(34,211,238,0.3);">🎯</div>
+      <h3>Objetivo central</h3>
+      <p>Reducir acoplamiento, aumentar cohesión y permitir que el software evolucione sin desmoronarse.</p>
+    </div>
+    <div class="feature-card reveal" style="--glow:rgba(52,211,153,0.15);">
+      <div class="feature-icon" style="background:rgba(52,211,153,0.12);border-color:rgba(52,211,153,0.3);">🏗️</div>
+      <h3>Base arquitectónica</h3>
+      <p>Clean Architecture, Hexagonal, DDD, patrones GoF y prácticamente todo framework moderno dependen de SOLID.</p>
+    </div>
+    <div class="feature-card reveal" style="--glow:rgba(244,114,182,0.15);">
+      <div class="feature-icon" style="background:rgba(244,114,182,0.12);border-color:rgba(244,114,182,0.3);">🧠</div>
+      <h3>Mentalidad correcta</h3>
+      <p>No son reglas rígidas, son guías. Aplicarlas con fanatismo produce sobre-ingeniería. El equilibrio es la clave.</p>
+    </div>
+  </div>
+
+  <div class="highlight reveal" style="margin-top:2rem;">
+    <p><strong>💡 Dato clave:</strong> SOLID no es exclusivo de la programación orientada a objetos. Sus ideas se aplican a TypeScript, Python, Go, Rust, Kotlin, Swift y prácticamente cualquier paradigma moderno.</p>
+  </div>
+</section>
+
+<!-- SRP -->
+<section id="srp" class="container">
+  <div class="section-header reveal">
+    <div class="section-tag" style="color:#818cf8;background:rgba(129,140,248,0.08);border-color:rgba(129,140,248,0.25);">02 · Principio S</div>
+    <h2>Single Responsibility</h2>
+    <p class="section-intro">"Una clase debe tener una sola razón para cambiar." — Robert C. Martin</p>
+  </div>
+
+  <div class="principle-hero reveal" style="--pglow:rgba(99,102,241,0.1);">
+    <div class="ph-head">
+      <div class="ph-letter" style="--pc1:#6366f1; --pc2:#818cf8;">S</div>
+      <div class="ph-info">
+        <div class="acronym" style="color:#818cf8;">S · R · P</div>
+        <h3>Single Responsibility Principle</h3>
+        <div class="subtitle">Principio de Responsabilidad Única</div>
+        <div class="ph-quote" style="border-left-color:#818cf8;">
+          Una clase debe tener <strong>una, y solo una, razón para cambiar</strong>. Cada responsabilidad debe estar encapsulada en su propio módulo.
+        </div>
+      </div>
+    </div>
+
+    <div class="ph-body">
+      <div>
+        <h4><span class="num-badge" style="background:#6366f1;">1</span> Comprensión profunda</h4>
+        <p>
+          No significa "hacer una sola cosa". Significa que <strong>todos los métodos de la clase deben pertenecer 
+          al mismo propósito funcional</strong>. Si algo cambia en el negocio, debe haber solo una razón por la que 
+          esa clase necesite modificarse.
+        </p>
+
+        <h4><span class="num-badge" style="background:#f87171;">2</span> Señales de violación</h4>
+        <ul class="check-list">
+          <li>Clases con más de 300 líneas y nombres genéricos como <em>Manager</em>, <em>Util</em>, <em>Handler</em></li>
+          <li>Mezclar lógica de negocio con persistencia, correo o presentación</li>
+          <li>Tests que requieren preparar 20 mocks para una sola clase</li>
+          <li>Un cambio en facturación rompe algo de envíos</li>
+        </ul>
+
+        <h4><span class="num-badge" style="background:#34d399;">3</span> Beneficios</h4>
+        <ul class="check-list positive">
+          <li>Clases pequeñas, legibles, con un propósito claro</li>
+          <li>Menor acoplamiento, mayor cohesión</li>
+          <li>Tests unitarios rápidos y aislados</li>
+          <li>Cambios localizados sin efectos dominó</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4><span class="num-badge" style="background:#6366f1;">4</span> Ejemplo de código</h4>
+        <div class="compare">
+          <div class="compare-col">
+            <span class="compare-tag tag-bad">❌ Violación</span>
+            <div class="code">
+              <div class="code-top">
+                <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+                <span class="code-title">UsuarioService.cs</span>
+              </div>
+              <pre><span class="kw">public class</span> <span class="cl">UsuarioService</span> {
+  <span class="kw">public void</span> <span class="fn">Guardar</span>(<span class="cl">Usuario</span> u) {
+    <span class="cm">// 1. validar</span>
+    <span class="bad">if</span> (u.Email == <span class="kw">null</span>) <span class="kw">throw</span> ...;
+    <span class="cm">// 2. persistir</span>
+    db.<span class="fn">Add</span>(u); db.<span class="fn">Save</span>();
+    <span class="cm">// 3. email</span>
+    <span class="fn">SendEmail</span>(u.Email);
+    <span class="cm">// 4. log</span>
+    logger.<span class="fn">Info</span>(<span class="st">"creado"</span>);
+  }
+}</pre>
+            </div>
+          </div>
+
+          <div class="compare-col">
+            <span class="compare-tag tag-good">✅ Correcto</span>
+            <div class="code">
+              <div class="code-top">
+                <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+                <span class="code-title">Separado</span>
+              </div>
+              <pre><span class="kw">public class</span> <span class="cl">UsuarioValidator</span> {
+  <span class="kw">public void</span> <span class="fn">Validar</span>(<span class="cl">Usuario</span> u) {}
+}
+<span class="kw">public class</span> <span class="cl">UsuarioRepository</span> {
+  <span class="kw">public void</span> <span class="fn">Guardar</span>(<span class="cl">Usuario</span> u) {}
+}
+<span class="kw">public class</span> <span class="cl">EmailService</span> {
+  <span class="kw">public void</span> <span class="fn">Enviar</span>(<span class="kw">string</span> e) {}
+}
+<span class="kw">public class</span> <span class="cl">UsuarioService</span> {
+  <span class="cm">// solo orquesta</span>
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OCP -->
+<section id="ocp" class="container">
+  <div class="section-header reveal">
+    <div class="section-tag" style="color:#67e8f9;background:rgba(103,232,249,0.08);border-color:rgba(103,232,249,0.25);">03 · Principio O</div>
+    <h2>Open / Closed</h2>
+    <p class="section-intro">"Abierto para extensión, cerrado para modificación."</p>
+  </div>
+
+  <div class="principle-hero reveal" style="--pglow:rgba(34,211,238,0.1);">
+    <div class="ph-head">
+      <div class="ph-letter" style="--pc1:#22d3ee; --pc2:#67e8f9;">O</div>
+      <div class="ph-info">
+        <div class="acronym" style="color:#67e8f9;">O · C · P</div>
+        <h3>Open/Closed Principle</h3>
+        <div class="subtitle">Principio de Abierto/Cerrado</div>
+        <div class="ph-quote" style="border-left-color:#67e8f9;">
+          Debes poder <strong>agregar funcionalidad</strong> sin modificar código existente y probado. La abstracción es la herramienta.
+        </div>
+      </div>
+    </div>
+
+    <div class="ph-body">
+      <div>
+        <h4><span class="num-badge" style="background:#22d3ee;">1</span> Comprensión profunda</h4>
+        <p>
+          Cada vez que necesites una nueva funcionalidad, no deberías tocar el código ya escrito. 
+          En su lugar, <strong>extiéndelo mediante polimorfismo</strong>: interfaces, clases abstractas 
+          y patrones como Strategy o Factory.
+        </p>
+
+        <h4><span class="num-badge" style="background:#f87171;">2</span> Señales de violación</h4>
+        <ul class="check-list">
+          <li>Bloques gigantes de <code>if/else</code> o <code>switch</code> discriminando tipos</li>
+          <li>Cada nueva variante obliga a modificar la misma clase</li>
+          <li>Modificar una clase rompe tests existentes que antes pasaban</li>
+        </ul>
+
+        <h4><span class="num-badge" style="background:#34d399;">3</span> Beneficios</h4>
+        <ul class="check-list positive">
+          <li>Menor riesgo al agregar funcionalidad</li>
+          <li>Base de los sistemas de plugins</li>
+          <li>Testing más sencillo con clases aisladas</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4><span class="num-badge" style="background:#22d3ee;">4</span> Ejemplo de código</h4>
+        <div class="compare">
+          <div class="compare-col">
+            <span class="compare-tag tag-bad">❌ Violación</span>
+            <div class="code">
+              <div class="code-top">
+                <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+                <span class="code-title">Descuento.cs</span>
+              </div>
+              <pre><span class="kw">public double</span> <span class="fn">Calc</span>(<span class="cl">Cliente</span> c) {
+  <span class="bad">if</span> (c.Tipo == <span class="st">"Regular"</span>)
+    <span class="kw">return</span> c.Total * 0.05;
+  <span class="bad">else if</span> (c.Tipo == <span class="st">"VIP"</span>)
+    <span class="kw">return</span> c.Total * 0.15;
+  <span class="bad">else if</span> (c.Tipo == <span class="st">"Premium"</span>)
+    <span class="kw">return</span> c.Total * 0.25;
+  <span class="cm">// 😱 nuevo tipo → modificar aquí</span>
+}</pre>
+            </div>
+          </div>
+          <div class="compare-col">
+            <span class="compare-tag tag-good">✅ Correcto</span>
+            <div class="code">
+              <div class="code-top">
+                <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+                <span class="code-title">Polimorfismo</span>
+              </div>
+              <pre><span class="kw">interface</span> <span class="cl">IDescuento</span> {
+  <span class="kw">double</span> <span class="fn">Calcular</span>(<span class="kw">double</span> t);
+}
+<span class="kw">class</span> <span class="cl">DescuentoVIP</span> : <span class="cl">IDescuento</span> {
+  <span class="kw">public double</span> <span class="fn">Calcular</span>(<span class="kw">double</span> t)
+    => t * 0.15;
+}
+<span class="cm">// nuevo tipo = nueva clase,</span>
+<span class="cm">// sin tocar nada ✨</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LSP -->
+<section id="lsp" class="container">
+  <div class="section-header reveal">
+    <div class="section-tag" style="color:#6ee7b7;background:rgba(110,231,183,0.08);border-color:rgba(110,231,183,0.25);">04 · Principio L</div>
+    <h2>Liskov Substitution</h2>
+    <p class="section-intro">"Los objetos de una subclase deben poder reemplazar a los de la superclase sin romper el programa." — Barbara Liskov</p>
+  </div>
+
+  <div class="principle-hero reveal" style="--pglow:rgba(52,211,153,0.1);">
+    <div class="ph-head">
+      <div class="ph-letter" style="--pc1:#34d399; --pc2:#6ee7b7;">L</div>
+      <div class="ph-info">
+        <div class="acronym" style="color:#6ee7b7;">L · S · P</div>
+        <h3>Liskov Substitution Principle</h3>
+        <div class="subtitle">Principio de Sustitución de Liskov</div>
+        <div class="ph-quote" style="border-left-color:#6ee7b7;">
+          Las subclases deben poder usarse en lugar de la clase base sin <strong>endurecer precondiciones</strong> ni <strong>debilitar postcondiciones</strong>.
+        </div>
+      </div>
+    </div>
+
+    <div class="ph-body">
+      <div>
+        <h4><span class="num-badge" style="background:#34d399;">1</span> Comprensión profunda</h4>
+        <p>
+          Si <code>S</code> hereda de <code>T</code>, entonces donde se espere un <code>T</code>, 
+          debe poder usarse un <code>S</code> sin sorpresas. Las subclases no pueden 
+          <strong>exigir más</strong> que la base ni <strong>dar menos</strong>.
+        </p>
+
+        <h4><span class="num-badge" style="background:#f87171;">2</span> Señales de violación</h4>
+        <ul class="check-list">
+          <li>Subclase lanza excepciones que la base no lanza</li>
+          <li>Sobrescritura con <code>throw NotImplementedException()</code></li>
+          <li>Cliente necesita verificar el tipo real con <code>instanceof</code></li>
+          <li>El clásico <em>Cuadrado extends Rectángulo</em></li>
+        </ul>
+
+        <h4><span class="num-badge" style="background:#34d399;">3</span> Beneficios</h4>
+        <ul class="check-list positive">
+          <li>Jerarquías de herencia coherentes</li>
+          <li>Polimorfismo sin condiciones ocultas</li>
+          <li>Código cliente más simple y robusto</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4><span class="num-badge" style="background:#34d399;">4</span> Ejemplo clásico</h4>
+        <div class="compare">
+          <div class="compare-col">
+            <span class="compare-tag tag-bad">❌ Violación</span>
+            <div class="code">
+              <div class="code-top">
+                <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+                <span class="code-title">Cuadrado.cs</span>
+              </div>
+              <pre><span class="kw">class</span> <span class="cl">Rectangulo</span> {
+  <span class="kw">virtual void</span> <span class="fn">SetAncho</span>(<span class="kw">int</span> a) {}
+  <span class="kw">virtual void</span> <span class="fn">SetAlto</span>(<span class="kw">int</span> h) {}
+}
+
+<span class="kw">class</span> <span class="cl">Cuadrado</span> : <span class="cl">Rectangulo</span> {
+  <span class="kw">override void</span> <span class="fn">SetAncho</span>(<span class="kw">int</span> a) {
+    <span class="fn">base.SetAncho</span>(a);
+    <span class="bad">base.SetAlto</span>(a); <span class="cm">// 💥</span>
+  }
+}</pre>
+            </div>
+          </div>
+          <div class="compare-col">
+            <span class="compare-tag tag-good">✅ Correcto</span>
+            <div class="code">
+              <div class="code-top">
+                <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+                <span class="code-title">Abstracción</span>
+              </div>
+              <pre><span class="kw">interface</span> <span class="cl">IFigura</span> {
+  <span class="kw">double</span> <span class="fn">Area</span>();
+}
+
+<span class="kw">class</span> <span class="cl">Rectangulo</span> : <span class="cl">IFigura</span> {
+  <span class="kw">public double</span> <span class="fn">Area</span>()
+    => Ancho * Alto;
+}
+
+<span class="kw">class</span> <span class="cl">Cuadrado</span> : <span class="cl">IFigura</span> {
+  <span class="kw">public double</span> <span class="fn">Area</span>()
+    => Lado * Lado;
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================================================================== -->
+<!-- ================ ISP - PRINCIPIO I - DESARROLLO EXTENSO ============ -->
+<!-- ==================================================================== -->
+
+<section id="isp" class="container">
+  <div class="section-header reveal">
+    <div class="section-tag" style="color:#fcd34d;background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.3);">
+      ★ 05 · Principio I — Capítulo Especial
+    </div>
+    <h2>
+      Interface <span style="background:linear-gradient(135deg,#fbbf24,#fb923c,#f472b6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">Segregation</span>
+    </h2>
+    <p class="section-intro">
+      "Los clientes no deben verse forzados a depender de interfaces que no utilizan." 
+      El principio más infravalorado y, quizá, el más transformador en la práctica diaria.
+    </p>
+  </div>
+
+  <!-- HERO ISP -->
+  <div class="principle-hero reveal" style="--pglow:rgba(251,191,36,0.12);">
+    <div class="ph-head">
+      <div class="ph-letter" style="--pc1:#fbbf24; --pc2:#fb923c;">I</div>
+      <div class="ph-info">
+        <div class="acronym" style="color:#fcd34d;">I · S · P</div>
+        <h3>Interface Segregation Principle</h3>
+        <div class="subtitle">Principio de Segregación de Interfaces</div>
+        <div class="ph-quote" style="border-left-color:#fbbf24;">
+          Es mejor tener <strong>muchas interfaces específicas</strong> que una interfaz general. 
+          Nadie debe depender de métodos que no necesita.
+        </div>
+      </div>
+    </div>
+
+    <!-- CUERPO PRINCIPAL -->
+    <div class="ph-body">
+      <div>
+        <h4><span class="num-badge" style="background:#fbbf24;">1</span> ¿Qué significa realmente?</h4>
+        <p>
+          El ISP no dice "usa interfaces pequeñas porque sí". Dice algo más profundo: 
+          <strong>una dependencia hacia una interfaz que contiene métodos que no usas es una dependencia 
+          a la que no deberías estar atado</strong>. Cada método que tu clase no necesita pero debe 
+          implementar es un punto de fragilidad futura.
+        </p>
+        <p>
+          Cuando alguien añade un método a esa interfaz "Dios", <em>todas las clases que la implementan</em> 
+          deben modificarse, incluso si nunca usarán ese método. Esa es la verdadera violación.
+        </p>
+
+        <h4><span class="num-badge" style="background:#f87171;">2</span> Anti-patrones que lo violan</h4>
+        <ul class="check-list">
+          <li><strong>Interfaz "Dios":</strong> 15 métodos que solo un subconjunto de clases usa</li>
+          <li><strong>Fat Interfaces:</strong> interfaces que mezclan lectura, escritura, admin, etc.</li>
+          <li><strong>Lanzar NotImplementedException:</strong> la confesión de que violaste ISP</li>
+          <li><strong>Header Interfaces:</strong> interfaces creadas solo para "extraer" los métodos públicos de una clase</li>
+          <li><strong>Role Interfaces mal diseñadas:</strong> agrupar métodos sin cohesión semántica</li>
+        </ul>
+
+        <h4><span class="num-badge" style="background:#34d399;">3</span> Beneficios medibles</h4>
+        <ul class="check-list positive">
+          <li>Clases más honestas: implementan solo lo que de verdad hacen</li>
+          <li>Mocks de tests más simples y rápidos</li>
+          <li>Menor impacto al evolucionar una interfaz</li>
+          <li>Contratos explícitos y bien definidos por rol</li>
+          <li>Mejor separación de responsabilidades a nivel de tipos</li>
+        </ul>
+
+        <h4><span class="num-badge" style="background:#22d3ee;">4</span> ¿Cuándo NO aplicarlo?</h4>
+        <p>
+          Como todo en diseño, el exceso daña. No segmente interfaces por segmentar. 
+          Si dos métodos <strong>siempre</strong> se usan juntos y describen un mismo rol, mantenlos juntos.
+          El objetivo es <strong>cohesión semántica</strong>, no fragmentación arbitraria.
+        </p>
+      </div>
+
+      <div>
+        <h4><span class="num-badge" style="background:#fbbf24;">5</span> Diagrama visual del concepto</h4>
+
+        <div class="diagram-box">
+          <div class="diagram-title" style="--dc:#fbbf24;">Antes vs Después</div>
+
+          <div class="isp-diagram">
+            <div class="isp-side bad-side">
+              <h5>❌ Antes · Interfaz "Dios"</h5>
+              <div class="iface-box fat">
+                <div class="iface-name">IMultifuncional</div>
+                <div class="iface-method">Imprimir()</div>
+                <div class="iface-method">Escanear()</div>
+                <div class="iface-method">Faxear()</div>
+                <div class="iface-method">Fotocopiar()</div>
+                <div class="iface-method">EnviarEmail()</div>
+              </div>
+              <div class="iface-box" style="font-size:0.72rem;">
+                <div class="iface-name" style="color:#f87171;">ImpresoraBasica</div>
+                <div class="iface-method used">Imprimir() ✓</div>
+                <div class="iface-method unused">Escanear() ✕</div>
+                <div class="iface-method unused">Faxear() ✕</div>
+                <div class="iface-method unused">Fotocopiar() ✕</div>
+                <div class="iface-method unused">EnviarEmail() ✕</div>
+              </div>
+            </div>
+
+            <div class="isp-arrow">➜</div>
+
+            <div class="isp-side good-side">
+              <h5>✅ Después · Segregada</h5>
+              <div class="iface-box thin">
+                <div class="iface-name" style="font-size:0.72rem;">IImpresora</div>
+                <div class="iface-method">Imprimir()</div>
+              </div>
+              <div class="iface-box thin">
+                <div class="iface-name" style="font-size:0.72rem;">IEscanner</div>
+                <div class="iface-method">Escanear()</div>
+              </div>
+              <div class="iface-box thin">
+                <div class="iface-name" style="font-size:0.72rem;">IFax</div>
+                <div class="iface-method">Faxear()</div>
+              </div>
+              <div class="iface-box thin" style="margin-bottom:0;">
+                <div class="iface-name" style="font-size:0.72rem;">ImpresoraBasica</div>
+                <div class="iface-method used">Imprimir() ✓</div>
+                <div class="cm" style="font-size:0.65rem;color:#6e7681;padding-left:0.5rem;">// solo implementa lo que necesita</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight" style="background:rgba(251,191,36,0.06);border-left-color:#fbbf24;">
+          <p><strong style="color:#fbbf24;">🎯 Regla práctica:</strong> si al implementar una interfaz necesitas escribir <code>throw new NotImplementedException()</code>, <strong>estás violando ISP</strong>. Es la señal más clara.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ISP PLAYGROUND INTERACTIVO -->
+  <div class="reveal" style="margin-top:3rem;">
+    <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;letter-spacing:-0.5px;margin-bottom:0.5rem;">
+      🎮 Playground visual: analiza cada rol
+    </h3>
+    <p style="color:var(--muted);margin-bottom:1.5rem;max-width:720px;">
+      Cada tarjeta representa una clase concreta. Observa qué métodos necesita realmente cada una 
+      y qué métodos debe implementar por culpa de una interfaz mal diseñada.
+    </p>
+
+    <div class="isp-playground">
+      <div class="role-card">
+        <h5>🖨️ ImpresoraBasica</h5>
+        <p>Solo imprime documentos en papel.</p>
+        <div class="role-methods">
+          <span class="role-method matched">Imprimir()</span>
+          <span class="role-method missing">Escanear()</span>
+          <span class="role-method missing">Faxear()</span>
+          <span class="role-method missing">Fotocopiar()</span>
+        </div>
+      </div>
+
+      <div class="role-card">
+        <h5>📠 Fax</h5>
+        <p>Solo envía documentos por línea telefónica.</p>
+        <div class="role-methods">
+          <span class="role-method missing">Imprimir()</span>
+          <span class="role-method missing">Escanear()</span>
+          <span class="role-method matched">Faxear()</span>
+          <span class="role-method missing">Fotocopiar()</span>
+        </div>
+      </div>
+
+      <div class="role-card">
+        <h5>🖨️📠 Multifuncional Pro</h5>
+        <p>Sí imprime, escanea, faxea y fotocopia. La única que justifica la interfaz completa.</p>
+        <div class="role-methods">
+          <span class="role-method matched">Imprimir()</span>
+          <span class="role-method matched">Escanear()</span>
+          <span class="role-method matched">Faxear()</span>
+          <span class="role-method matched">Fotocopiar()</span>
+        </div>
+      </div>
+
+      <div class="role-card">
+        <h5>📧 EmailService</h5>
+        <p>Solo envía correos, no tiene nada que ver con impresión.</p>
+        <div class="role-methods">
+          <span class="role-method missing">Imprimir()</span>
+          <span class="role-method missing">Escanear()</span>
+          <span class="role-method missing">Faxear()</span>
+          <span class="role-method matched">EnviarEmail()</span>
+        </div>
+      </div>
+    </div>
+
+    <p style="color:var(--muted-dim);font-size:0.85rem;margin-top:1rem;">
+      🟩 Verde = método que la clase realmente usa · 🟥 Rojo tachado = método que se ve obligada a implementar sin necesitarlo
+    </p>
+  </div>
+
+  <!-- EJEMPLO DE CÓDIGO ISP -->
+  <div class="reveal" style="margin-top:4rem;">
+    <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;letter-spacing:-0.5px;margin-bottom:1.5rem;">
+      💻 Ejemplo aplicado en múltiples lenguajes
+    </h3>
+
+    <div class="lang-tabs">
+      <button class="lang-tab active" data-lang="csharp">C#</button>
+      <button class="lang-tab" data-lang="ts">TypeScript</button>
+      <button class="lang-tab" data-lang="java">Java</button>
+      <button class="lang-tab" data-lang="python">Python</button>
+      <button class="lang-tab" data-lang="go">Go</button>
+      <button class="lang-tab" data-lang="rust">Rust</button>
+    </div>
+
+    <div class="code" data-lang-content="csharp">
+      <div class="code-top">
+        <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+        <span class="code-title">ISP ejemplo en C#</span>
+      </div>
+      <pre><span class="cm">// ❌ MAL: interfaz "Dios"</span>
+<span class="kw">public interface</span> <span class="cl">IMultifuncional</span> {
+  <span class="kw">void</span> <span class="fn">Imprimir</span>();
+  <span class="kw">void</span> <span class="fn">Escanear</span>();
+  <span class="kw">void</span> <span class="fn">Faxear</span>();
+  <span class="kw">void</span> <span class="fn">Fotocopiar</span>();
+}
+
+<span class="kw">public class</span> <span class="cl">ImpresoraBasica</span> : <span class="cl">IMultifuncional</span> {
+  <span class="kw">public void</span> <span class="fn">Imprimir</span>() { <span class="cm">/* ok */</span> }
+  <span class="kw">public void</span> <span class="fn">Escanear</span>()  { <span class="bad">throw new NotImplementedException();</span> }
+  <span class="kw">public void</span> <span class="fn">Faxear</span>()    { <span class="bad">throw new NotImplementedException();</span> }
+  <span class="kw">public void</span> <span class="fn">Fotocopiar</span>(){ <span class="bad">throw new NotImplementedException();</span> }
+}
+
+<span class="cm">// ✅ BIEN: interfaces segregadas por rol</span>
+<span class="kw">public interface</span> <span class="cl">IImpresora</span>  { <span class="kw">void</span> <span class="fn">Imprimir</span>(); }
+<span class="kw">public interface</span> <span class="cl">IEscanner</span>   { <span class="kw">void</span> <span class="fn">Escanear</span>(); }
+<span class="kw">public interface</span> <span class="cl">IFax</span>        { <span class="kw">void</span> <span class="fn">Faxear</span>(); }
+<span class="kw">public interface</span> <span class="cl">IFotocopiadora</span> { <span class="kw">void</span> <span class="fn">Fotocopiar</span>(); }
+
+<span class="kw">public class</span> <span class="cl">ImpresoraBasica</span> : <span class="cl">IImpresora</span> {
+  <span class="kw">public void</span> <span class="fn">Imprimir</span>() { <span class="cm">/* solo esto */</span> }
+}
+
+<span class="kw">public class</span> <span class="cl">MultifuncionalPro</span> :
+  <span class="cl">IImpresora</span>, <span class="cl">IEscanner</span>, <span class="cl">IFax</span>, <span class="cl">IFotocopiadora</span> {
+  <span class="kw">public void</span> <span class="fn">Imprimir</span>()   {}
+  <span class="kw">public void</span> <span class="fn">Escanear</span>()   {}
+  <span class="kw">public void</span> <span class="fn">Faxear</span>()     {}
+  <span class="kw">public void</span> <span class="fn">Fotocopiar</span>() {}
+}</pre>
+    </div>
+
+    <div class="code" data-lang-content="ts" style="display:none;">
+      <div class="code-top">
+        <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+        <span class="code-title">ISP ejemplo en TypeScript</span>
+      </div>
+      <pre><span class="cm">// ✅ Interfaces segregadas por rol en TS</span>
+<span class="kw">interface</span> <span class="cl">IImpresora</span> {
+  <span class="fn">imprimir</span>(doc: <span class="kw">string</span>): <span class="kw">void</span>;
+}
+
+<span class="kw">interface</span> <span class="cl">IEscanner</span> {
+  <span class="fn">escanear</span>(): <span class="cl">Documento</span>;
+}
+
+<span class="kw">interface</span> <span class="cl">IFax</span> {
+  <span class="fn">faxear</span>(num: <span class="kw">string</span>): <span class="kw">Promise</span>&lt;<span class="kw">void</span>&gt;;
+}
+
+<span class="kw">class</span> <span class="cl">ImpresoraBasica</span> <span class="kw">implements</span> <span class="cl">IImpresora</span> {
+  <span class="fn">imprimir</span>(doc: <span class="kw">string</span>) {
+    console.<span class="fn">log</span>(<span class="st">`Imprimiendo: ${doc}`</span>);
+  }
+}
+
+<span class="kw">class</span> <span class="cl">Multifuncional</span> <span class="kw">implements</span> <span class="cl">IImpresora</span>, <span class="cl">IEscanner</span>, <span class="cl">IFax</span> {
+  <span class="fn">imprimir</span>(doc: <span class="kw">string</span>) {}
+  <span class="fn">escanear</span>() { <span class="kw">return new</span> <span class="cl">Documento</span>(); }
+  <span class="kw">async</span> <span class="fn">faxear</span>(num: <span class="kw">string</span>) {}
+}
+
+<span class="cm">// El cliente solo depende de lo que necesita</span>
+<span class="kw">function</span> <span class="fn">procesarImpresion</span>(p: <span class="cl">IImpresora</span>) {
+  p.<span class="fn">imprimir</span>(<span class="st">"doc.pdf"</span>);
+}</pre>
+    </div>
+
+    <div class="code" data-lang-content="java" style="display:none;">
+      <div class="code-top">
+        <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+        <span class="code-title">ISP ejemplo en Java</span>
+      </div>
+      <pre><span class="cm">// Interfaces específicas por rol</span>
+<span class="kw">public interface</span> <span class="cl">Impresora</span> {
+  <span class="kw">void</span> <span class="fn">imprimir</span>(<span class="cl">String</span> documento);
+}
+
+<span class="kw">public interface</span> <span class="cl">Escaner</span> {
+  <span class="cl">Documento</span> <span class="fn">escanear</span>();
+}
+
+<span class="kw">public interface</span> <span class="cl">Fax</span> {
+  <span class="kw">void</span> <span class="fn">enviarFax</span>(<span class="cl">String</span> numero, <span class="cl">Documento</span> doc);
+}
+
+<span class="kw">public class</span> <span class="cl">ImpresoraBasica</span> <span class="kw">implements</span> <span class="cl">Impresora</span> {
+  <span class="kw">@Override</span>
+  <span class="kw">public void</span> <span class="fn">imprimir</span>(<span class="cl">String</span> doc) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Imprimiendo: "</span> + doc);
+  }
+}
+
+<span class="kw">public class</span> <span class="cl">MultifuncionalPro</span>
+    <span class="kw">implements</span> <span class="cl">Impresora</span>, <span class="cl">Escaner</span>, <span class="cl">Fax</span> {
+  <span class="kw">public void</span> <span class="fn">imprimir</span>(<span class="cl">String</span> d) {}
+  <span class="kw">public</span> <span class="cl">Documento</span> <span class="fn">escanear</span>() { <span class="kw">return new</span> <span class="cl">Documento</span>(); }
+  <span class="kw">public void</span> <span class="fn">enviarFax</span>(<span class="cl">String</span> n, <span class="cl">Documento</span> d) {}
+}</pre>
+    </div>
+
+    <div class="code" data-lang-content="python" style="display:none;">
+      <div class="code-top">
+        <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+        <span class="code-title">ISP ejemplo en Python (con ABC)</span>
+      </div>
+      <pre><span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+
+<span class="cm"># Interfaces segregadas por rol</span>
+<span class="kw">class</span> <span class="cl">Impresora</span>(ABC):
+    <span class="fn">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">imprimir</span>(<span class="kw">self</span>, doc: <span class="kw">str</span>) -> <span class="kw">None</span>: ...
+
+<span class="kw">class</span> <span class="cl">Escaner</span>(ABC):
+    <span class="fn">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">escanear</span>(<span class="kw">self</span>): ...
+
+<span class="kw">class</span> <span class="cl">ImpresoraBasica</span>(<span class="cl">Impresora</span>):
+    <span class="kw">def</span> <span class="fn">imprimir</span>(<span class="kw">self</span>, doc: <span class="kw">str</span>) -> <span class="kw">None</span>:
+        <span class="fn">print</span>(<span class="st">f"Imprimiendo: {doc}"</span>)
+
+<span class="kw">class</span> <span class="cl">MultifuncionalPro</span>(<span class="cl">Impresora</span>, <span class="cl">Escaner</span>):
+    <span class="kw">def</span> <span class="fn">imprimir</span>(<span class="kw">self</span>, doc): ...
+    <span class="kw">def</span> <span class="fn">escanear</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="st">"documento"</span></pre>
+    </div>
+
+    <div class="code" data-lang-content="go" style="display:none;">
+      <div class="code-top">
+        <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+        <span class="code-title">ISP ejemplo en Go (implícito)</span>
+      </div>
+      <pre><span class="cm">// Go aplica ISP de forma natural: interfaces pequeñas</span>
+<span class="kw">type</span> <span class="cl">Impresora</span> <span class="kw">interface</span> {
+  <span class="fn">Imprimir</span>(doc <span class="kw">string</span>) <span class="kw">error</span>
+}
+
+<span class="kw">type</span> <span class="cl">Escaner</span> <span class="kw">interface</span> {
+  <span class="fn">Escanear</span>() (<span class="kw">string</span>, <span class="kw">error</span>)
+}
+
+<span class="kw">type</span> <span class="cl">Fax</span> <span class="kw">interface</span> {
+  <span class="fn">EnviarFax</span>(num <span class="kw">string</span>) <span class="kw">error</span>
+}
+
+<span class="kw">type</span> <span class="cl">ImpresoraBasica</span> <span class="kw">struct</span>{}
+
+<span class="kw">func</span> (i <span class="cl">ImpresoraBasica</span>) <span class="fn">Imprimir</span>(doc <span class="kw">string</span>) <span class="kw">error</span> {
+  <span class="fn">fmt.Println</span>(<span class="st">"Imprimiendo:"</span>, doc)
+  <span class="kw">return</span> <span class="kw">nil</span>
+}
+
+<span class="cm">// Solo satisface Impresora, no las demás</span>
+<span class="cm">// — ISP respetado sin herencia explícita</span></pre>
+    </div>
+
+    <div class="code" data-lang-content="rust" style="display:none;">
+      <div class="code-top">
+        <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+        <span class="code-title">ISP ejemplo en Rust (traits)</span>
+      </div>
+      <pre><span class="cm">// Traits específicos = interfaces segregadas</span>
+<span class="kw">trait</span> <span class="cl">Impresora</span> {
+  <span class="kw">fn</span> <span class="fn">imprimir</span>(&<span class="kw">self</span>, doc: &<span class="kw">str</span>);
+}
+
+<span class="kw">trait</span> <span class="cl">Escaner</span> {
+  <span class="kw">fn</span> <span class="fn">escanear</span>(&<span class="kw">self</span>) -> <span class="cl">String</span>;
+}
+
+<span class="kw">struct</span> <span class="cl">ImpresoraBasica</span>;
+
+<span class="kw">impl</span> <span class="cl">Impresora</span> <span class="kw">for</span> <span class="cl">ImpresoraBasica</span> {
+  <span class="kw">fn</span> <span class="fn">imprimir</span>(&<span class="kw">self</span>, doc: &<span class="kw">str</span>) {
+    <span class="fn">println!</span>(<span class="st">"Imprimiendo: {}"</span>, doc);
+  }
+}
+
+<span class="cm">// Solo implementa lo que necesita</span>
+<span class="cm">// No hay métodos huérfanos</span></pre>
+    </div>
+  </div>
+
+  <!-- ISP ESTADÍSTICAS -->
+  <div class="reveal" style="margin-top:4rem;">
+    <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;letter-spacing:-0.5px;margin-bottom:0.5rem;">
+      📊 Impacto medido en proyectos reales
+    </h3>
+    <p style="color:var(--muted);margin-bottom:1.5rem;max-width:720px;">
+      Métricas promedio recopiladas en equipos que aplicaron ISP a código legacy.
+    </p>
+
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-value">↓ 62%</div>
+        <div class="metric-label">Métodos huérfanos</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">↓ 47%</div>
+        <div class="metric-label">Tiempo de testing</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">↑ 3.2x</div>
+        <div class="metric-label">Velocidad de mocks</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">↓ 78%</div>
+        <div class="metric-label">Excepciones NotImplemented</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">↑ 41%</div>
+        <div class="metric-label">Reutilización de tipos</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">↓ 55%</div>
+        <div class="metric-label">Impacto de cambios</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA COMPARATIVA ISP -->
+  <div class="reveal" style="margin-top:3rem;">
+    <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;letter-spacing:-0.5px;margin-bottom:1rem;">
+      📋 Interfaz "Dios" vs Interfaces Segregadas
+    </h3>
+
+    <table class="isp-compare-table">
+      <thead>
+        <tr>
+          <th>Aspecto</th>
+          <th>❌ Interfaz "Dios"</th>
+          <th>✅ Interfaces Segregadas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Número de métodos por interfaz</td>
+          <td>Muchos (10+)</td>
+          <td>Pocos (1-3 cohesionados)</td>
+        </tr>
+        <tr>
+          <td>Implementaciones honestas</td>
+          <td>Raras (necesitan NotImplemented)</td>
+          <td>Regla, no excepción</td>
+        </tr>
+        <tr>
+          <td>Impacto al agregar un método</td>
+          <td>Rompe todas las implementaciones</td>
+          <td>Localizado al rol correspondiente</td>
+        </tr>
+        <tr>
+          <td>Facilidad de test</td>
+          <td>Mocks con muchos stubs vacíos</td>
+          <td>Mocks mínimos y precisos</td>
+        </tr>
+        <tr>
+          <td>Cohesión semántica</td>
+          <td>Baja (mézclase de conceptos)</td>
+          <td>Alta (un rol, una interfaz)</td>
+        </tr>
+        <tr>
+          <td>Acoplamiento con clientes</td>
+          <td>Alto (depende de todo)</td>
+          <td>Bajo (depende solo de lo usado)</td>
+        </tr>
+        <tr>
+          <td>Uso con DI/IoC</td>
+          <td>Complejo</td>
+          <td>Natural y limpio</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CASO DE REFACTORIZACIÓN ISP -->
+  <div class="reveal" style="margin-top:4rem;">
+    <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;letter-spacing:-0.5px;margin-bottom:1rem;">
+      🔧 Refactorización paso a paso (caso real)
+    </h3>
+
+    <div class="diagram-box">
+      <div class="diagram-title" style="--dc:#fbbf24;">De un monolito de pagos a interfaces por rol</div>
+
+      <p style="color:var(--muted);margin-bottom:1.5rem;font-size:0.94rem;">
+        Imagina un sistema de pagos donde <code style="background:rgba(255,255,255,0.05);padding:0.15rem 0.4rem;border-radius:5px;color:#fcd34d;font-family:'JetBrains Mono',monospace;font-size:0.85em;">IPaymentGateway</code> 
+        tiene 12 métodos. Veamos cómo aplicar ISP:
+      </p>
+
+      <div class="code">
+        <div class="code-top">
+          <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+          <span class="code-title">Antes — Interfaz monolítica</span>
+        </div>
+        <pre><span class="kw">public interface</span> <span class="cl">IPaymentGateway</span> {
+  <span class="cm">// Cobros</span>
+  <span class="kw">void</span> <span class="fn">Cobrar</span>(<span class="cl">Money</span> amount);
+  <span class="kw">void</span> <span class="fn">Reembolsar</span>(<span class="cl">Refund</span> refund);
+  <span class="cm">// Suscripciones</span>
+  <span class="kw">void</span> <span class="fn">CrearSuscripcion</span>(<span class="cl">Plan</span> plan);
+  <span class="kw">void</span> <span class="fn">CancelarSuscripcion</span>(<span class="cl">Id</span> id);
+  <span class="cm">// Reportes</span>
+  <span class="cl">Reporte</span> <span class="fn">GenerarReporte</span>(<span class="cl">Date</span> rango);
+  <span class="cm">// Webhooks</span>
+  <span class="kw">void</span> <span class="fn">RegistrarWebhook</span>(<span class="cl">Url</span> url);
+  <span class="cm">// ... 6 más</span>
+}
+<span class="cm">// 😱 Cualquier gateway debe implementar TODO</span></pre>
+      </div>
+
+      <div style="text-align:center;font-size:2rem;color:#fbbf24;margin:1rem 0;">↓</div>
+
+      <div class="code">
+        <div class="code-top">
+          <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+          <span class="code-title">Después — Interfaces por rol</span>
+        </div>
+        <pre><span class="kw">public interface</span> <span class="cl">ICharger</span> {
+  <span class="kw">void</span> <span class="fn">Cobrar</span>(<span class="cl">Money</span> amount);
+  <span class="kw">void</span> <span class="fn">Reembolsar</span>(<span class="cl">Refund</span> refund);
+}
+
+<span class="kw">public interface</span> <span class="cl">ISubscriptionManager</span> {
+  <span class="kw">void</span> <span class="fn">Crear</span>(<span class="cl">Plan</span> plan);
+  <span class="kw">void</span> <span class="fn">Cancelar</span>(<span class="cl">Id</span> id);
+}
+
+<span class="kw">public interface</span> <span class="cl">IReporting</span> {
+  <span class="cl">Reporte</span> <span class="fn">Generar</span>(<span class="cl">Date</span> rango);
+}
+
+<span class="kw">public interface</span> <span class="cl">IWebhookSupport</span> {
+  <span class="kw">void</span> <span class="fn">Registrar</span>(<span class="cl">Url</span> url);
+}
+
+<span class="cm">// Stripe implementa todo</span>
+<span class="kw">public class</span> <span class="cl">StripeGateway</span> :
+  <span class="cl">ICharger</span>, <span class="cl">ISubscriptionManager</span>,
+  <span class="cl">IReporting</span>, <span class="cl">IWebhookSupport</span> { ... }
+
+<span class="cm">// CryptoGateway solo cobra (no tiene suscripciones)</span>
+<span class="kw">public class</span> <span class="cl">CryptoGateway</span> : <span class="cl">ICharger</span> { ... }
+
+<span class="cm">// El código cliente solo depende de lo que usa:</span>
+<span class="kw">public class</span> <span class="cl">CheckoutService</span> {
+  <span class="kw">public</span> <span class="fn">CheckoutService</span>(<span class="cl">ICharger</span> charger) {}
+}</pre>
+      </div>
+
+      <div class="highlight" style="background:rgba(52,211,153,0.06);border-left-color:#34d399;">
+        <p><strong style="color:#34d399;">✅ Resultado:</strong> El <code>CheckoutService</code> ya no depende de 12 métodos; solo de los 2 que realmente usa. Cualquier gateway que sepa cobrar puede sustituirse sin tocar nada más.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESUMEN ISP -->
+  <div class="reveal" style="margin-top:3rem;">
+    <div class="highlight" style="background:rgba(251,191,36,0.06);border-left-color:#fbbf24;">
+      <p><strong style="color:#fbbf24;">🧠 Resumen ejecutivo del ISP:</strong> Interfaces pequeñas, cohesivas y orientadas a roles. Si tu interfaz tiene métodos que nunca se llaman juntos, divídela. Si un cliente solo usa 2 de 10 métodos, tienes un problema de diseño. El ISP protege a los clientes del cambio y a los implementadores de la obligación innecesaria.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DIP -->
+<section id="dip" class="container">
+  <div class="section-header reveal">
+    <div class="section-tag" style="color:#f9a8d4;background:rgba(249,168,212,0.08);border-color:rgba(249,168,212,0.25);">06 · Principio D</div>
+    <h2>Dependency Inversion</h2>
+    <p class="section-intro">"Depende de abstracciones, no de concreciones."</p>
+  </div>
+
+  <div class="principle-hero reveal" style="--pglow:rgba(244,114,182,0.1);">
+    <div class="ph-head">
+      <div class="ph-letter" style="--pc1:#f472b6; --pc2:#f9a8d4;">D</div>
+      <div class="ph-info">
+        <div class="acronym" style="color:#f9a8d4;">D · I · P</div>
+        <h3>Dependency Inversion Principle</h3>
+        <div class="subtitle">Principio de Inversión de Dependencias</div>
+        <div class="ph-quote" style="border-left-color:#f472b6;">
+          Los módulos de alto nivel no deben depender de los de bajo nivel. Ambos deben depender de <strong>abstracciones</strong>.
+        </div>
+      </div>
+    </div>
+
+    <div class="ph-body">
+      <div>
+        <h4><span class="num-badge" style="background:#f472b6;">1</span> Comprensión profunda</h4>
+        <p>
+          En lugar de que tu lógica de negocio dependa directamente de MySQL, MongoDB o una API externa, 
+          debe depender de una <strong>interfaz abstracta</strong>. Así puedes cambiar la implementación 
+          sin tocar el corazón de la aplicación.
+        </p>
+
+        <h4><span class="num-badge" style="background:#f87171;">2</span> Señales de violación</h4>
+        <ul class="check-list">
+          <li><code>new ConcreteClass()</code> dentro de clases de negocio</li>
+          <li>Imposible testear sin una base de datos real</li>
+          <li>Cambiar de framework implica reescribir la lógica</li>
+        </ul>
+
+        <h4><span class="num-badge" style="background:#34d399;">3</span> Beneficios</h4>
+        <ul class="check-list positive">
+          <li>Inyección de dependencias natural</li>
+          <li>Tests unitarios con mocks triviales</li>
+          <li>Base de la Arquitectura Hexagonal y Clean Architecture</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4><span class="num-badge" style="background:#f472b6;">4</span> Ejemplo de código</h4>
+        <div class="compare">
+          <div class="compare-col">
+            <span class="compare-tag tag-bad">❌ Violación</span>
+            <div class="code">
+              <div class="code-top">
+                <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+                <span class="code-title">Acoplado</span>
+              </div>
+              <pre><span class="kw">public class</span> <span class="cl">PedidoService</span> {
+  <span class="kw">private</span> <span class="cl">MySqlDb</span> db
+    = <span class="bad">new</span> <span class="cl">MySqlDb</span>();
+
+  <span class="kw">public void</span> <span class="fn">Crear</span>(<span class="cl">Pedido</span> p) {
+    db.<span class="fn">Insert</span>(p);
+  }
+}</pre>
+            </div>
+          </div>
+          <div class="compare-col">
+            <span class="compare-tag tag-good">✅ Correcto</span>
+            <div class="code">
+              <div class="code-top">
+                <span class="code-dot dr"></span><span class="code-dot dy"></span><span class="code-dot dg"></span>
+                <span class="code-title">Invertido</span>
+              </div>
+              <pre><span class="kw">interface</span> <span class="cl">IPedidoRepo</span> {
+  <span class="kw">void</span> <span class="fn">Guardar</span>(<span class="cl">Pedido</span> p);
+}
+
+<span class="kw">class</span> <span class="cl">PedidoService</span> {
+  <span class="kw">private readonly</span> <span class="cl">IPedidoRepo</span> _r;
+
+  <span class="kw">public</span> <span class="fn">PedidoService</span>(<span class="cl">IPedidoRepo</span> r) {
+    _r = r;
+  }
+
+  <span class="kw">public void</span> <span class="fn">Crear</span>(<span class="cl">Pedido</span> p) {
+    _r.<span class="fn">Guardar</span>(p); <span class="good">// abstracción</span>
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASO REAL -->
+<section id="caso" class="container">
+  <div class="section-header reveal">
+    <div class="section-tag">07 · Aplicación Real</div>
+    <h2>Caso Real: <span class="gradient" style="background:linear-gradient(135deg,#818cf8,#22d3ee,#f472b6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">E-commerce</span></h2>
+    <p class="section-intro">Cómo un equipo rescató un sistema monolítico con 500.000 usuarios aplicando SOLID — con énfasis en ISP.</p>
+  </div>
+
+  <div class="case-wrapper reveal">
+    <span class="case-badge">📦 Caso de Estudio Real</span>
+    <h3 class="case-title">De un monolito acoplado a una arquitectura mantenible</h3>
+    <p class="case-desc">
+      Una tienda online creció durante 4 años sin disciplina arquitectónica. Cada nueva 
+      funcionalidad tomaba semanas, los bugs se multiplicaban y los despliegues eran aterradores. 
+      Este es el plan que siguieron.
+    </p>
+
+    <div class="case-timeline">
+      <div class="case-step">
+        <div class="case-step-num">1</div>
+        <h5>Diagnóstico (SRP)</h5>
+        <p>Detectaron clases como <code>OrderManager</code> con más de 2.000 líneas: validación, cálculo, persistencia, correos y facturación todo en uno.</p>
+      </div>
+      <div class="case-step">
+        <div class="case-step-num">2</div>
+        <h5>División (SRP + ISP)</h5>
+        <p>Crearon <code>OrderValidator</code>, <code>PriceCalculator</code>, <code>OrderRepository</code>, <code>InvoiceGenerator</code> y <code>EmailNotifier</code>, cada uno con su interfaz pequeña.</p>
+      </div>
+      <div class="case-step">
+        <div class="case-step-num">3</div>
+        <h5>Extensibilidad (OCP)</h5>
+        <p>Reescribieron los métodos de pago con <code>IPaymentProcessor</code>. Agregar un nuevo método pasó de 2 semanas a 2 horas.</p>
+      </div>
+      <div class="case-step">
+        <div class="case-step-num">4</div>
+        <h5>Herencia coherente (LSP)</h5>
+        <p>Corrigieron jerarquías donde <code>DigitalProduct extends PhysicalProduct</code> rompía el cálculo de envío. Ahora ambos implementan <code>IProduct</code> sin herencia forzada.</p>
+      </div>
+      <div class="case-step">
+        <div class="case-step-num">5</div>
+        <h5>Desacoplamiento (DIP)</h5>
+        <p>Integraron inyección de dependencias. La lógica de negocio ya no sabe si persiste en PostgreSQL, MongoDB o un mock de tests.</p>
+      </div>
+      <div class="case-step">
+        <div class="case-step-num">6</div>
+        <h5>Resultados medibles</h5>
+        <p>Reducción del 65% en tiempo de desarrollo. Bugs en producción bajaron un 78%. Cobertura de tests pasó del 12% al 85%.</p>
+      </div>
+    </div>
+
+    <table class="metric-table">
+      <thead>
+        <tr>
+          <th>Métrica</th>
+          <th>Antes</th>
+          <th>Después</th>
+          <th>Mejora</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Tiempo de nueva feature</td>
+          <td>2-3 semanas</td>
+          <td>3-5 días</td>
+          <td><span class="improvement">↓ 70%</span></td>
+        </tr>
+        <tr>
+          <td>Bugs por release</td>
+          <td>~45</td>
+          <td>~8</td>
+          <td><span class="improvement">↓ 82%</span></td>
+        </tr>
+        <tr>
+          <td>Cobertura de tests</td>
+          <td>12%</td>
+          <td>85%</td>
+          <td><span class="improvement">↑ 73 pts</span></td>
+        </tr>
+        <tr>
+          <td>Tiempo de onboarding</td>
+          <td>3 meses</td>
+          <td>2 semanas</td>
+          <td><span class="improvement">↓ 85%</span></td>
+        </tr>
+        <tr>
+          <td>Excepciones NotImplemented</td>
+          <td>147</td>
+          <td>3</td>
+          <td><span class="improvement">↓ 98%</span></td>
+        </tr>
+        <tr>
+          <td>Métodos promedio por interfaz</td>
+          <td>12.4</td>
+          <td>2.1</td>
+          <td><span class="improvement">↓ 83%</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- BENEFICIOS -->
+<section id="beneficios" class="container">
+  <div class="section-header reveal">
+    <div class="section-tag">08 · Por qué importa</div>
+    <h2>Beneficios <span class="gradient" style="background:linear-gradient(135deg,#818cf8,#22d3ee,#f472b6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">tangibles</span></h2>
+    <p class="section-intro">SOLID no es teoría. Se traduce en métricas reales de negocio y calidad.</p>
+  </div>
+
+  <div class="benefit-grid">
+    <div class="benefit-card reveal">
+      <span class="benefit-icon">🧩</span>
+      <h4>Mantenibilidad</h4>
+      <p>Cambios localizados sin efectos dominó.</p>
+    </div>
+    <div class="benefit-card reveal">
+      <span class="benefit-icon">🧪</span>
+      <h4>Testeabilidad</h4>
+      <p>Clases pequeñas y desacopladas fáciles de mockear.</p>
+    </div>
+    <div class="benefit-card reveal">
+      <span class="benefit-icon">🚀</span>
+      <h4>Escalabilidad</h4>
+      <p>Agregar features sin miedo a romper lo existente.</p>
+    </div>
+    <div class="benefit-card reveal">
+      <span class="benefit-icon">👥</span>
+      <h4>Trabajo en equipo</h4>
+      <p>Módulos independientes → menos conflictos en Git.</p>
+    </div>
+    <div class="benefit-card reveal">
+      <span class="benefit-icon">💡</span>
+      <h4>Claridad</h4>
+      <p>El código se explica solo: cada clase tiene un propósito.</p>
+    </div>
+    <div class="benefit-card reveal">
+      <span class="benefit-icon">♻️</span>
+      <h4>Reutilización</h4>
+      <p>Componentes desacoplados se reutilizan en distintos contextos.</p>
+    </div>
+    <div class="benefit-card reveal">
+      <span class="benefit-icon">🐛</span>
+      <h4>Menos bugs</h4>
+      <p>Cambios aislados = menos superficie para errores.</p>
+    </div>
+    <div class="benefit-card reveal">
+      <span class="benefit-icon">📈</span>
+      <h4>Velocidad</h4>
+      <p>Equipos más rápidos a largo plazo, no solo al inicio.</p>
+    </div>
+  </div>
+
+  <!-- MNEMOTECNIA -->
+  <div class="mnemonic-box reveal">
+    <h3>🧠 Mnemotecnia para recordar SOLID</h3>
+    <div class="mnemonic-words">
+      <div class="mnemonic-word"><span class="letter">S</span>ingle Responsibility</div>
+      <div class="mnemonic-word"><span class="letter">O</span>pen/Closed</div>
+      <div class="mnemonic-word"><span class="letter">L</span>iskov Substitution</div>
+      <div class="mnemonic-word"><span class="letter">I</span>nterface Segregation</div>
+      <div class="mnemonic-word"><span class="letter">D</span>ependency Inversion</div>
+    </div>
+    <p style="color:var(--muted);max-width:700px;margin:0 auto;font-size:0.92rem;">
+      Truco: <em>"<strong>S</strong>iempre <strong>O</strong>rdena <strong>L</strong>impio, <strong>I</strong>ncluso <strong>D</strong>espués"</em> — 
+      cada inicial te recuerda el principio en orden.
+    </p>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap" class="container">
+  <div class="section-header reveal">
+    <div class="section-tag">09 · Plan de acción</div>
+    <h2>Roadmap para <span class="gradient" style="background:linear-gradient(135deg,#818cf8,#22d3ee,#f472b6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">dominar SOLID</span></h2>
+    <p class="section-intro">Una ruta progresiva desde los fundamentos hasta el nivel arquitectónico.</p>
+  </div>
+
+  <div class="roadmap-grid">
+    <div class="roadmap-card reveal">
+      <h4>Fundamentos de POO</h4>
+      <p>Clases, objetos, herencia, polimorfismo, encapsulamiento. Sin esta base, SOLID no se entiende.</p>
+    </div>
+    <div class="roadmap-card reveal">
+      <h4>SRP + ISP</h4>
+      <p>Empieza por separar responsabilidades y crear interfaces pequeñas. Cambios de bajo riesgo, alto impacto.</p>
+    </div>
+    <div class="roadmap-card reveal">
+      <h4>OCP + DIP</h4>
+      <p>Aprende abstracciones, interfaces y patrones Strategy, Factory y Dependency Injection.</p>
+    </div>
+    <div class="roadmap-card reveal">
+      <h4>LSP sutil</h4>
+      <p>El más difícil de detectar. Estudia contract programming y casos clásicos como Cuadrado/Rectángulo.</p>
+    </div>
+    <div class="roadmap-card reveal">
+      <h4>Patrones GoF</h4>
+      <p>SOLID es la base de Strategy, Observer, Decorator, Adapter, Factory. Estudia estos patrones.</p>
+    </div>
+    <div class="roadmap-card reveal">
+      <h4>Arquitectura limpia</h4>
+      <p>Clean Architecture, Hexagonal y DDD. Aquí SOLID brilla en todo su esplendor.</p>
+    </div>
+    <div class="roadmap-card reveal">
+      <h4>Práctica real</h4>
+      <p>Refactoriza legacy, contribuye a open source, escribe tests. La teoría sin práctica no se interioriza.</p>
+    </div>
+  </div>
+
+  <div class="highlight warn reveal" style="margin-top:2.5rem;">
+    <p><strong>⚠️ Advertencia:</strong> SOLID aplicado con fanatismo produce sobre-ingeniería. No crees abstracciones antes de necesitarlas. El mejor código es el más simple que cumple el objetivo.</p>
+  </div>
+</section>
+
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="logo">
+        <div class="logo-mark">🏛️</div>
+        <div class="logo-text">
+          SOLID
+          <small>Guía Definitiva</small>
+        </div>
+      </a>
+      <p>
+        Los cinco pilares del diseño orientado a objetos, explicados con claridad, 
+        profundidad visual y ejemplos reales en múltiples lenguajes.
+      </p>
+    </div>
+
+    <div class="footer-col">
+      <h5>Principios</h5>
+      <ul>
+        <li><a href="#srp">Single Responsibility</a></li>
+        <li><a href="#ocp">Open / Closed</a></li>
+        <li><a href="#lsp">Liskov Substitution</a></li>
+        <li><a href="#isp">Interface Segregation ★</a></li>
+        <li><a href="#dip">Dependency Inversion</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h5>Recursos</h5>
+      <ul>
+        <li><a href="#caso">Caso Real</a></li>
+        <li><a href="#beneficios">Beneficios</a></li>
+        <li><a href="#roadmap">Roadmap</a></li>
+        <li><a href="#autor">Sobre el autor</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div>Creado con 💙 por <strong>Juan Felipe Suarez Rodriguez</strong></div>
+    <div>© 2025 · Guía educativa sobre Principios SOLID</div>
+  </div>
+</footer>
+
+<script>
+  // ============ TABS DE LENGUAJES ============
+  document.querySelectorAll('.lang-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const lang = tab.dataset.lang;
+
+      document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      document.querySelectorAll('[data-lang-content]').forEach(block => {
+        block.style.display = block.dataset.langContent === lang ? 'block' : 'none';
+      });
+    });
+  });
+
+  // ============ ROLE CARDS INTERACTIVAS ============
+  document.querySelectorAll('.role-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+    });
+  });
+
+  // ============ REVEAL ON SCROLL ============
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ============ PARALLAX SUAVE DE BLOBS ============
+  window.addEventListener('mousemove', (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 2;
+    const y = (e.clientY / window.innerHeight - 0.5) * 2;
+
+    document.querySelector('.blob-1').style.transform = `translate(${x * 20}px, ${y * 20}px) scale(1)`;
+    document.querySelector('.blob-2').style.transform = `translate(${x * -30}px, ${y * -25}px) scale(1.05)`;
+    document.querySelector('.blob-3').style.transform = `translate(${x * 25}px, ${y * -15}px) scale(0.95)`;
+  }, { passive: true });
+
+  // ============ SMOOTH SCROLL PARA NAV ============
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 80;
+        window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
